@@ -1,0 +1,19 @@
+{
+    "parser": "babel-eslint",
+    "extends": [
+        "airbnb-base",
+        "prettier"
+    ],
+    "plugins": [
+        "import"
+    ],
+    "rules": {
+        "no-underscore-dangle": 0,
+        "indent": [
+            "error",
+            2
+        ],
+        "linebreak-style": 0,
+        "no-console": 0
+    }
+}

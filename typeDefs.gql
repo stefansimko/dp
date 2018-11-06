@@ -1,0 +1,96 @@
+scalar Date
+
+
+type User { 
+    _id: ID
+   deviceId: String
+   ipAddressV4: String
+   firstName: String!
+   lastName: String!
+   userName: String!
+   mobileNumber: String!
+   email: String!
+   termsOfUseAccepted: Boolean!
+   securityQuestion: SecurityQuestions
+   securityAnwsers: String
+   salutation: Salutation!
+   password: String!
+   parkingPlace: ParkingPlace
+   occupations: [Occupation]!
+}
+
+
+type ParkingHouse {
+    _id: ID
+    displayName: String!
+    iat: Float!
+    iot: Float!
+    parkingplace: [ParkingPlace!]!
+    # address: Address
+}
+
+type ParkingPlace {
+    _id: ID
+    displayName: String!
+    parkingHouse: ParkingHouse!
+    owner: User!
+}
+
+type Occupation {
+    _id: ID
+    parkingPlace: ParkingPlace!
+    owner: User!
+    day: Date!
+}
+
+# input Address { 
+#     street: String!
+#     houseNumber: Int!
+#     zipcode: Int!
+#     city: String!
+# }
+enum UserStatus {
+   ACTIVE
+   LOCKED 
+   IN_REGISTRATION
+}
+
+
+enum Salutation {
+    MR
+    MS
+    MRS
+}
+
+enum SecurityQuestions {
+    MOTHER_PLACE_OF_BIRTH
+    BEST_CHILDHOOD_FRIEND_NAME
+    FIRST_PET_NAME
+    FAVOURITE_TEACHER_NAME
+    FAVOURITE_HISTORIC_CHARACTER
+    GRANDFATHER_PROFESSION
+}
+type Query {
+    getUserInfo(userId: ID!): User
+    getParkingHouseInfo(parkingHouseId: ID!): ParkingHouse!
+    getAllParkingHouses: [ParkingHouse!]!
+}
+
+type Token {
+    token: String!
+}
+
+type Mutation {
+    signupUser(deviceId: String,ipAddressV4: String,firstName: String!,lastName: String!,userName: String!,mobileNumber: String!,email: String!,termsOfUseAccepted: Boolean!,securityQuestion: SecurityQuestions,securityAnwsers: String,salutation: Salutation!, password: String!, parkingPlace: ID!): User
+    signupParkingHouse(displayName:String!, iat: Float!, iot:Float!): ParkingHouse
+    signUpParkingPlace(displayName:String!,parkingHouse: ID!,owner: ID! ): ParkingPlace
+    signupOccupation(parkingPlace: ID!, owner: ID!, day: Date!): Occupation!
+    deleteUser( userId: ID!): User!
+    deleteParkingHouse(parkingHouseId: ID!): ParkingHouse!
+    deleteParkingPlace(parkingPlaceId: ID!): ParkingPlace!
+    updateParkingPlace(parkingPlaceId: ID!,parkingHouseId: ID!,owner: ID!,displayName:String): ParkingPlace
+    updateParkingHouse(parkingHouseId: ID!,displayName: String,iat: Float,iot: Float ): ParkingHouse
+}
+
+
+
