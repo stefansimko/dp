@@ -105,6 +105,8 @@ const UserSchema = new mongoose.Schema({
         ref: "Occupation"
     }]
 
+
+
 })
 
 UserSchema.pre("save", function (next) {

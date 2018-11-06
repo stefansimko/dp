@@ -26,7 +26,7 @@ type ParkingHouse {
     iat: Float!
     iot: Float!
     parkingplace: [ParkingPlace!]!
-    # address: Address
+     address: Address
 }
 
 type ParkingPlace {
@@ -43,12 +43,12 @@ type Occupation {
     day: Date!
 }
 
-# input Address { 
-#     street: String!
-#     houseNumber: Int!
-#     zipcode: Int!
-#     city: String!
-# }
+type Address { 
+    street: String!
+    houseNumber: Int!
+    zipcode: Int!
+    city: String!
+}
 enum UserStatus {
    ACTIVE
    LOCKED 
