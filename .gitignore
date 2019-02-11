@@ -68,34 +68,3 @@ typings/
 
 .history
 
-
-
-
-build/auth.js
-build/email.js
-build/occupationControllers.js
-build/parkingHouse.routes.js
-build/parkingHouseControllers.js
-build/parkingPlace.routes.js
-build/parkingPlaceControllers.js
-build/resolvers.js
-build/server.js
-build/token.routes.js
-build/tokenControllers.js
-build/user.routes.js
-build/userControllers.js
-build/config/index.js
-build/config/passport.js
-build/db/index.js
-build/db/models/Availability.js
-build/db/models/Occupation.js
-build/db/models/ParkingHouse.js
-build/db/models/ParkingPlace.js
-build/db/models/Token.js
-build/db/models/User.js
-build/middleware/admin-role.js
-build/middleware/basic-auth.js
-build/middleware/check-auth.js
-build/middleware/login.js
-build/middleware/test.js
-build/middleware/test2.js
