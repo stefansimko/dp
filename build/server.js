@@ -66,4 +66,4 @@ require('./parkingPlace.routes.js')(app);
 // server.applyMiddleware({ app });
 
 
-app.listen({ port: 4000 }, () => () => console.log(`🚀 Server ready at http://localhost:4000`));
+app.listen(process.env.PORT || 5000, () => () => console.log('Express server listening on %d, in %s mode', config.port, app.get('env')));
