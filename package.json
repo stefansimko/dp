@@ -1,6 +1,9 @@
 {
   "name": "fullstack-vue-graphql-starter",
   "version": "1.0.0",
+  "engines": {
+    "node": "8.15.0"
+  },
   "description": "Starter for Full-Stack Vue-GraphQL-Apollo Projects",
   "main": "server.js",
   "scripts": {
