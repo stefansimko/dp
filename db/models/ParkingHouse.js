@@ -18,25 +18,25 @@ const ParkingHouseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: false,
         ref: "ParkingPlace"
-    }]
-    // address: {
-    //     street: {
-    //         type: String,
-    //         require: true
-    //     },
-    //     houseNumber: {
-    //         type: Number,
-    //         require: true
-    //     },
-    //     zipcode: {
-    //         type: Number,
-    //         require: true
-    //     },
-    //     city: {
-    //         type: String,
-    //         require: true
-    //     }
-    // }
+    }],
+    address: {
+        street: {
+            type: String,
+            require: true
+        },
+        houseNumber: {
+            type: Number,
+            require: true
+        },
+        zipcode: {
+            type: Number,
+            require: true
+        },
+        city: {
+            type: String,
+            require: true
+        }
+    }
 
 });
 module.exports = mongoose.model("ParkingHouse", ParkingHouseSchema);

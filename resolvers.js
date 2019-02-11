@@ -14,13 +14,11 @@ const createToken = (user, secret, expiresIn) => {
 module.exports = {
     User: { parkingPlace: ({ _id }) => ParkingPlace.findOne({ owner: _id }) },
     ParkingPlace: { parkingHouse: ({ _id }) => ParkingHouse.findOne({ parkingplace: _id }) },
-
-    // Top: { player: ({ player }) => User.findById(player) },
+    // ParkingHouse: { parkingHouse: ({ _id }) => ParkingPlace.findOne({ parkingHouse: _id }) },
     Query: {
         getUserInfo: async (_, { userId }, { User }) => {
-            const user = await User.findOne({
-                _id: userId
-            }).populate('parkingPlace')
+            const user = await User.findOne()
+
             return user;
         },
         getAllParkingHouses: async (_, args, { ParkingHouse }) => {

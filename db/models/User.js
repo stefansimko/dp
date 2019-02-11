@@ -2,8 +2,25 @@ const mongoose = require("mongoose");
 const md5 = require("md5");
 const bcrypt = require("bcrypt");
 const enumValues = require('mongoose-enumvalues');
+const jwt = require('jsonwebtoken');
+// var validate = require('mongoose-validator').validate;
+var validate = require('mongoose-validator')
+
 
 require('mongoose-type-email');
+
+var nameValidator = [
+    validate({
+        validator: 'isLength',
+        arguments: [3, 50],
+        message: 'Name should be between {ARGS[0]} and {ARGS[1]} characters',
+    }),
+    validate({
+        validator: 'isAlphanumeric',
+        passIfEmpty: true,
+        message: 'Name should contain alpha-numeric characters only',
+    }),
+]
 
 
 const UserSchema = new mongoose.Schema({
@@ -46,7 +63,8 @@ const UserSchema = new mongoose.Schema({
                 return (v == null || v.trim().length < 1) || re.test(v)
             },
             message: 'Provided phone number is invalid.'
-        }
+        },
+        unique: true
     },
     email: {
         type: mongoose.SchemaTypes.Email,
@@ -56,13 +74,17 @@ const UserSchema = new mongoose.Schema({
         type: String,
         unique: true,
         required: true,
-        max: 30
+        // maxlength: [8, 'Maximum characters for Username is 8'],
+        minlength: 4,
+        trim: true
+        // validate: nameValidator
+
     },
     password: {
         type: String,
         required: true,
-        min: 8,
-        max: 16,
+        minLength: 8,
+        maxLength: 16,
         trim: true
     },
     termsOfUseAccepted: {
@@ -71,12 +93,12 @@ const UserSchema = new mongoose.Schema({
     },
     securityQuestion: {
         type: String,
-        required: true,
+        required: false,
         enum: ["MOTHER_PLACE_OF_BIRTH", "BEST_CHILDHOOD_FRIEND_NAME", "FIRST_PET_NAME", "FAVOURITE_TEACHER_NAME", "FAVOURITE_HISTORIC_CHARACTER",
             "GRANDFATHER_PROFESSION"]
     },
-    securityAnwsers: {
-        required: true,
+    securityAnswer: {
+        required: false,
         type: String,
         min: 3,
         max: 255
@@ -92,7 +114,7 @@ const UserSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ["ACTIVE", "LOCKED", "IN_REGISTRATION"],
-        default: "IN_REGISTRATION"
+        default: "ACTIVE"
     },
     parkingPlace: {
         type: mongoose.Schema.Types.ObjectId,
@@ -103,7 +125,27 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: false,
         ref: "Occupation"
-    }]
+    }],
+
+    token: [{
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: "Token"
+    }],
+    numberOfRemainingAttempts: {
+        type: Number,
+        default: 3
+    },
+    oneTimePassword: {
+        required: false,
+        type: String,
+        unique: true
+    },
+    optWasUsed: {
+        required: false,
+        type: Boolean,
+    }
+
 
 
 
@@ -123,6 +165,14 @@ UserSchema.pre("save", function (next) {
             next();
         });
     });
+});
+
+UserSchema.post('save', function (error, doc, next) {
+    if (error.name === 'MongoError' && error.code === 11000) {
+        next(new Error(error));
+    } else {
+        next(error);
+    }
 });
 
 module.exports = mongoose.model("User", UserSchema);
