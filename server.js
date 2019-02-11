@@ -24,7 +24,7 @@ const { check, validationResult } = require('express-validator/check');
 
 mongoose
     .connect(
-        process.env.MONGO_URI,
+        'mongodb://root:root123@ds145053.mlab.com:45053/wireparking',
         { useNewUrlParser: true }
     )
     .then(() => console.log("DB connected"))

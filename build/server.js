@@ -22,7 +22,7 @@ const Occupation = require("./db/models/Occupation");
 
 const { check, validationResult } = require('express-validator/check');
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => console.log("DB connected")).catch(err => console.error(err));
+mongoose.connect('mongodb://root:root123@ds145053.mlab.com:45053/wireparking', { useNewUrlParser: true }).then(() => console.log("DB connected")).catch(err => console.error(err));
 mongoose.Promise = global.Promise;
 
 const app = express();
