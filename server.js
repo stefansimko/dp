@@ -11,9 +11,6 @@ const session = require('express-session');
 
 
 // Import typeDefs and resolvers
-const filePath = path.join(__dirname, "typeDefs.gql");
-const typeDefs = fs.readFileSync(filePath, "utf-8");
-const resolvers = require("./resolvers");
 
 // Import Environment Variables and Mongoose Models
 require("dotenv").config({ path: "variables.env" });
@@ -43,18 +40,18 @@ app.use(bodyParser.json())
 // app.use(auth)
 app.use(session({ secret: 'passport-tutorial', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
 
-const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    playground: true,
-    formatError: error => ({
-        name: error.name,
-        message: error.message.replace("Context creation failed:", "")
-    }),
-    context: async () => {
-        return { User, ParkingHouse, ParkingPlace, Occupation };
-    }
-})
+// const server = new ApolloServer({
+//typeDefs,
+// resolvers,
+//     playground: true,
+//     formatError: error => ({
+//         name: error.name,
+//         message: error.message.replace("Context creation failed:", "")
+//     }),
+//     context: async () => {
+//         return { User, ParkingHouse, ParkingPlace, Occupation };
+//     }
+// })
 
 // app.use((err, req, res) => {
 
@@ -78,7 +75,7 @@ require('./parkingPlace.routes.js')(app);
 
 
 
-server.applyMiddleware({ app });
+// server.applyMiddleware({ app });
 
 
 app.listen({ port: 4000 }, () => () =>

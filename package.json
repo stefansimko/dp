@@ -7,7 +7,9 @@
   "description": "Starter for Full-Stack Vue-GraphQL-Apollo Projects",
   "main": "server.js",
   "scripts": {
+    "build": "babel . --ignore node_modules,build --out-dir build",
     "server": "nodemon server.js",
+    "start": "node -r dotenv/config build/server.js",
     "client": "cd client && npm start",
     "dev": "concurrently --names \"server,client\" \"npm run server --silent\" \"npm run client --silent\""
   },
