@@ -7,6 +7,8 @@ const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
 const bcrypt = require("bcrypt");
 const Token = require('./db/models/Token')
+const Together = require('./db/models/Together')
+
 
 
 
@@ -415,7 +417,15 @@ exports.setAvailableDay = (req, res) => {
             }
         }
     })
-
+    const togetherToSave = new Together({
+        day: day,
+        parkingPlace: parkingPlaceID
+    }).save().then(data => {
+        console.log(data)
+        ParkingPlace.findByIdAndUpdate(data.parkingPlace, { $push: { availabilities: data._id } }, { upsert: true, new: true }, function (err, parkingPlaceFound) {
+            console.log(parkingPlaceFound)
+        })
+    })
     Availability.findOne({ parkingPlace: parkingPlaceID }).exec()
         .then(data => {
             if (data) {
@@ -488,6 +498,29 @@ exports.useAvailableDay = (req, res) => {
                 }
             })
         }
+        Together.findOne({ parkingPlace: parkingPlaceID, day: day }, function (err, togetherFound) {
+            if (togetherFound) {
+
+                Together.findOneAndUpdate({ parkingPlace: parkingPlaceID, day: day }, { $set: { owner: user._id } }, { upsert: true, new: true }, function (err, togetherUpdated) {
+                    console.log(togetherUpdated)
+                })
+            }
+            else {
+                const togetherToSave = new Together({
+                    day: day,
+                    parkingPlace: parkingPlaceID,
+                    owner: user._id
+                }).save().then(data => {
+                    ParkingPlace.findByIdAndUpdate(data.parkingPlace, { $push: { availabilities: data._id } }, { upsert: true, new: true }, function (err, parkingPlaceFound) {
+                        console.log(parkingPlaceFound)
+                    })
+                })
+            }
+        })
+
+
+
+
     }).then(user => {
         Availability.findOne({ day: day, parkingPlace: parkingPlaceID }, function (err, availability) {
             if (!availability || !availability.day || !availability.parkingPlace || availability.day.size == 0) {
@@ -521,13 +554,32 @@ exports.useAvailableDay = (req, res) => {
                     })
 
                     newOccupation.save().then(occupation => {
+
                         User.findOneAndUpdate({ mobileNumber: loginAlias }, { $push: { occupations: occupation } }, { upsert: true, new: true }
                         ).then(user => {
                             Availability.findOneAndUpdate({ parkingPlace: occupation.parkingPlace }, { $pull: { day: day } }, { upsert: true }
-                            ).then(res.status(200).json({
-                                message: "Setting occupation was successful"
+                            ).then(data => {
+                                console.log(data.day.length)
+                                if (data.day.length == 1) {
+                                    data.remove();
+                                    return res.status(200).json({
+                                        message: "Setting occupation was successful"
 
-                            }))
+                                    })
+                                }
+                                else {
+                                    return res.status(200).json({
+                                        message: "Setting occupation was successful"
+
+                                    })
+                                }
+                            }
+
+                                // res.status(200).json({
+                                // message: "Setting occupation was successful"
+
+                                // })
+                            )
                         })
                     })
                 }

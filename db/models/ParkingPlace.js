@@ -14,7 +14,12 @@ const ParkingPlaceSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: false,
         ref: "User"
-    }
+    },
+    availabilities: [{
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: "Together"
+    }],
 });
 
 module.exports = mongoose.model("ParkingPlace", ParkingPlaceSchema);

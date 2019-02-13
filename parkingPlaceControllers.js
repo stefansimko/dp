@@ -1,6 +1,9 @@
 const ParkingPlace = require('./db/models/ParkingPlace')
 const ParkingHouse = require('./db/models/ParkingHouse')
 const User = require('./db/models/User')
+const Availability = require('./db/models/Availability')
+const Occupation = require('./db/models/Occupation')
+const Together = require('./db/models/Together')
 
 
 exports.signUp = (req, res) => {
@@ -166,4 +169,22 @@ exports.delete = (req, res) => {
             }
         });
     })
-}
+},
+    exports.getAvailability = (req, res) => {
+        const parkingPlaceId = req.params.parkingPlaceIdentifier;
+        ParkingPlace.findById(parkingPlaceId, 'displayName').lean()
+            .populate('owner', '-_id firstName lastName mobileNumber email')
+            .populate('parkingHouse', 'displayName Iat Iot address').lean()
+            .populate({
+                path: 'availabilities',
+                select: '-_id day',
+                populate: {
+                    path: 'owner',
+                    model: 'User',
+                    select: '-_id userName firstName lastName mobileNumber email '
+                }
+            })
+            .exec(function (err, together) {
+                res.status(200).json(together)
+            })
+    }

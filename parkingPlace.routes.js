@@ -7,8 +7,7 @@ module.exports = (app) => {
 
     app.post('/v1/parking-place/:parkingPlaceIdentifier/modify', parkinPlaces.modify);
 
-
-
+    app.get('/v1/parking-place/:parkingPlaceIdentifier', parkinPlaces.getAvailability)
 
     //     app.get('/v1/parking-houses', parkingHouses.findAll);
 

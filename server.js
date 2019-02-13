@@ -40,29 +40,6 @@ app.use(bodyParser.json())
 // app.use(auth)
 app.use(session({ secret: 'passport-tutorial', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
 
-// const server = new ApolloServer({
-//typeDefs,
-// resolvers,
-//     playground: true,
-//     formatError: error => ({
-//         name: error.name,
-//         message: error.message.replace("Context creation failed:", "")
-//     }),
-//     context: async () => {
-//         return { User, ParkingHouse, ParkingPlace, Occupation };
-//     }
-// })
-
-// app.use((err, req, res) => {
-
-//     res.json({
-//         errors: {
-//             message: err.message,
-//             error: {},
-//         },
-//     }).send();
-// });
-
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
@@ -78,7 +55,7 @@ require('./parkingPlace.routes.js')(app);
 // server.applyMiddleware({ app });
 
 
-app.listen(process.env.PORT || 5000, () => () =>
+app.listen(process.env.PORT || 4000, () => () =>
     console.log('Express server listening on %d, in %s mode', config.port, app.get('env'))
 );
 
