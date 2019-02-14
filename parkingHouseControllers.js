@@ -208,9 +208,7 @@ exports.freeParkingPlaces = (req, res) => {
             }
             ]
         }
-
         )
-
         .exec(function (err, together) {
             res.status(200).json(together)
         })
