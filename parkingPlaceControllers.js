@@ -177,6 +177,11 @@ exports.delete = (req, res) => {
             .populate('parkingHouse', 'displayName Iat Iot address').lean()
             .populate({
                 path: 'availabilities',
+
+
+
+
+
                 select: '-_id day',
                 populate: {
                     path: 'owner',
