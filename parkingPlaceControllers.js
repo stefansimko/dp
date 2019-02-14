@@ -177,16 +177,15 @@ exports.delete = (req, res) => {
             .populate('parkingHouse', 'displayName Iat Iot address').lean()
             .populate({
                 path: 'availabilities',
-
-
-
-
-
                 select: '-_id day',
                 populate: {
                     path: 'owner',
                     model: 'User',
                     select: '-_id userName firstName lastName mobileNumber email '
+                },
+                populate: {
+                    path: 'availabilities',
+                    model: 'Together'
                 }
             })
             .exec(function (err, together) {

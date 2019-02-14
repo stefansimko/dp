@@ -22,7 +22,7 @@ module.exports = (app) => {
 
     app.post('/v1/user/:loginAliasUser/use-avalaible-day', users.useAvailableDay)
 
-    app.post('/v1/user/:loginAliasUser/set-available-day', users.setAvailableDay)
+    app.post('/v1/user/:loginAliasUser/set-available-days', users.setAvailableDay)
 
     app.put('/v1/token', login, users.token)
 

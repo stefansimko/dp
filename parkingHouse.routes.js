@@ -9,4 +9,5 @@ module.exports = (app) => {
 
     app.get('/v1/parking-houses', parkingHouses.findAll);
 
+    app.get('/v1/free-parking-places', parkingHouses.freeParkingPlaces)
 }

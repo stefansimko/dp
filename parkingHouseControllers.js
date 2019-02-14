@@ -186,3 +186,32 @@ exports.findAll = (req, res) => {
 
     // }
 };
+
+exports.freeParkingPlaces = (req, res) => {
+    ParkingHouse.find()
+        .select('displayName iat iot address')
+        .lean()
+        .populate({
+            path: 'parkingplace',
+            model: 'ParkingPlace',
+            select: '_id displayName owner',
+            populate: [{
+                path: 'owner',
+                model: 'User',
+                select: 'firstName lastName email mobilNumber'
+            },
+            {
+                path: 'availabilities',
+                model: 'Together',
+                select: ' -_id day',
+                match: { owner: null }
+            }
+            ]
+        }
+
+        )
+
+        .exec(function (err, together) {
+            res.status(200).json(together)
+        })
+}
