@@ -431,7 +431,7 @@ exports.setAvailableDay = (req, res) => {
             if (data) {
                 Availability.findOne({ parkingPlace: parkingPlaceID, day: day }, function (err, findDays) {
                     if (findDays) {
-                        res.json({
+                        return res.json({
                             "error-response": {
                                 "error-code": 403,
                                 "error'key": "AVAILABLE_DAY_FOR_THIS_PARKING_PLACE_ALREADY_EXISTS",
@@ -441,7 +441,7 @@ exports.setAvailableDay = (req, res) => {
                     }
                     else {
                         data.update({ $addToSet: { day: day } }, { upsert: true, new: true }, function (err, availabilityUpdated) {
-                            res.status(200).send({ message: "Setting available was successful." })
+                            return res.status(200).send({ message: "Setting available was successful." })
                         })
                     }
                 })
