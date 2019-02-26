@@ -8,7 +8,8 @@ const randomstring = require("randomstring");
 const bcrypt = require("bcrypt");
 const Token = require('./db/models/Token')
 const Together = require('./db/models/Together')
-
+const changeCase = require('change-case')
+const _ = require('lodash');
 
 
 
@@ -16,7 +17,9 @@ const Together = require('./db/models/Together')
 
 
 exports.signUp = (req, res) => {
-    User.findOne({ $or: [{ mobileNumber: req.body.mobileNumber }, { userName: req.body.userName }, { email: req.body.email }] }, function (err, user) {
+
+
+    User.findOne({ $or: [{ mobileNumber: req.body['mobile-number'] }, { userName: req.body['user-name'] }, { email: req.body['email'] }] }, function (err, user) {
 
         if (user) {
             res.json({
@@ -31,25 +34,25 @@ exports.signUp = (req, res) => {
         }
 
         const newUser = new User({
-            deviceId: req.body.deviceId,
-            ipAddressV4: req.body.ipAddressV4,
-            securityQuestion: req.body.securityQuestion,
-            securityAnswer: req.body.securityAnswer,
-            mobileNumber: req.body.mobileNumber,
-            email: req.body.email,
-            userName: req.body.userName,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            termsOfUseAccepted: req.body.termsOfUseAccepted,
-            salutation: req.body.salutation,
-            password: req.body.password
+            deviceId: req.body['device-id'],
+            ipAddressV4: req.body['ip-address-v4'],
+            securityQuestion: req.body['security-question'],
+            securityAnswer: req.body['security-answer'],
+            mobileNumber: req.body['mobile-number'],
+            email: req.body['email'],
+            userName: req.body['user-name'],
+            firstName: req.body['first-name'],
+            lastName: req.body['last-name'],
+            termsOfUseAccepted: req.body['terms-of-use-accepted'],
+            salutation: req.body['salutation'],
+            password: req.body['password']
         });
 
         newUser.save()
             .then(data => {
                 var userToSend = {
-                    userName: data.userName,
-                    status: data.status
+                    'user-name': data.userName,
+                    'status': data.status
                 }
                 res.status(200).send(userToSend);
             }).catch(err => {
@@ -69,7 +72,7 @@ exports.signUp = (req, res) => {
 
 exports.modify = (req, res) => {
 
-    User.findOneAndUpdate({ userName: req.params.mobileNumber }, function (err, user) {
+    User.findOneAndUpdate({ userName: req.params['mobile-number'] }, function (err, user) {
         res.status(200).send({
             message: "User was succesfully updated! "
         })
@@ -78,7 +81,7 @@ exports.modify = (req, res) => {
 };
 
 exports.userInfo = (req, res) => {
-    User.findOne(req.params.mobileNumber)
+    User.findOne(req.params['mobile-number'])
         .populate([{
             path: 'parkingPlace',
 
@@ -139,7 +142,7 @@ exports.userInfo = (req, res) => {
 };
 
 exports.userProfile = (req, res) => {
-    User.findOne(req.params.mobileNumber)
+    User.findOne(req.params['mobileNumber'])
         .then(user => {
             if (!user) {
                 return res.status(404).send({
@@ -169,8 +172,8 @@ exports.userProfile = (req, res) => {
 
 exports.assignParkingPlace = (req, res) => {
 
-    const loginAlias = req.body.loginAlias;
-    const parkingPlaceID = req.body.parkingPlaceIdentifier;
+    const loginAlias = req.body['login-alias'];
+    const parkingPlaceID = req.body['parking-place-identifier'];
 
     if (!loginAlias) {
         res.json({
@@ -195,7 +198,6 @@ exports.assignParkingPlace = (req, res) => {
     }
 
     User.findOneAndUpdate({ $or: [{ mobileNumber: loginAlias }, { userName: loginAlias }, { email: loginAlias }] }, { $set: { parkingPlace: parkingPlaceID } }, { upsert: true, new: true }, function (err, user) {
-        console.log('dosiel som 1')
         if (!user) {
             res.json({
                 "error-response": {
@@ -244,8 +246,8 @@ exports.assignParkingPlace = (req, res) => {
 
 };
 exports.releaseParkingPlace = (req, res) => {
-    const loginAlias = req.body.loginAlias;
-    const parkingPlaceID = req.body.parkingPlaceIdentifier;
+    const loginAlias = req.body['login-alias'];
+    const parkingPlaceID = req.body['parking-place-identifier'];
 
     if (!loginAlias) {
         res.json({
@@ -297,8 +299,8 @@ exports.releaseParkingPlace = (req, res) => {
                 return
             }
 
-        }).then(data => {
-            if (!data.owner) {
+        }).then(parkingplaceF => {
+            if (!parkingplaceF.owner) {
                 res.json({
                     "error-response": {
                         "error-code": 403,
@@ -309,7 +311,7 @@ exports.releaseParkingPlace = (req, res) => {
 
                 return
             }
-            data.update({ $unset: { owner: data._id } },
+            parkingplaceF.update({ $unset: { owner: data._id } },
                 { upsert: true, new: true }, function (err, parkingPlaceFound) {
                     res.status(200).send({
                         message: "The user has been unassigned to the Parking place."
@@ -339,9 +341,9 @@ exports.releaseParkingPlace = (req, res) => {
 
 exports.setAvailableDay = (req, res) => {
 
-    const loginAlias = req.body.loginAlias;
-    const parkingPlaceID = req.body.parkingPlaceIdentifier;
-    const day = req.body.day
+    const loginAlias = req.body['login-alias'];
+    const parkingPlaceID = req.body['parking-place-identifier'];
+    const day = req.body['day']
 
     if (!loginAlias) {
         res.json({
@@ -462,9 +464,9 @@ exports.setAvailableDay = (req, res) => {
 
 exports.useAvailableDay = (req, res) => {
 
-    const loginAlias = req.body.loginAlias;
-    const parkingPlaceID = req.body.parkingPlaceIdentifier;
-    const day = req.body.day
+    const loginAlias = req.body['login-alias'];
+    const parkingPlaceID = req.body['parking-place-identifier'];
+    const day = req.body['day']
 
     if (!loginAlias) {
         res.json({
@@ -606,10 +608,10 @@ exports.token = (req, res) => {
 
     var userName = req.userName
     console.log('usernamen', userName)
-    var scope = req.scope
-    var clientID = req.clientID
-    var serviceUrl = req.serviceUrl
-    var httpMethod = req.httpMethod
+    var scope = req['scope']
+    var clientID = req['client-id']
+    var serviceUrl = req['service-url']
+    var httpMethod = req['http-method']
 
 
     User.findOne({ userName: userName }, function (err, userFound) {
@@ -663,7 +665,8 @@ exports.validateToken = (req, res, next) => {
 }
 
 exports.securityQuestion = (req, res, next) => {
-    if (!req.body.loginAlias) {
+    const loginAlias = req.body['login-alias']
+    if (!req.body['login-alias']) {
         return res.json({
             "error-response": {
                 "error-code": 400,
@@ -699,9 +702,9 @@ exports.securityQuestion = (req, res, next) => {
 }
 
 exports.resetPassword = (req, res, next) => {
-    const loginAlias = req.body.loginAlias;
-    const securityQuestion = req.body.securityQuestion;
-    const securityAnswer = req.body.securityAnswer;
+    const loginAlias = req.body['login-alias'];
+    const securityQuestion = req.body['security-question'];
+    const securityAnswer = req.body['security-answer'];
     if (!req.body.loginAlias) {
         return res.json({
             "error-response": {
@@ -810,8 +813,8 @@ exports.resetPassword = (req, res, next) => {
     })
 }
 exports.isOtpValid = (req, res, next) => {
-    const loginAlias = req.body.loginAlias;
-    const otp = req.body.oneTimePassword;
+    const loginAlias = req.body['login-alias'];
+    const otp = req.body['one-time-password'];
     if (!loginAlias || !otp) {
         return res.json({
             "error-response": {
@@ -866,9 +869,9 @@ exports.isOtpValid = (req, res, next) => {
 
 }
 exports.changePassword = (req, res, next) => {
-    const loginAlias = req.body.loginAlias;
-    const otp = req.body.oneTimePassword;
-    const newPassword = req.body.newPassword;
+    const loginAlias = req.body['login-alias'];
+    const otp = req.body['one-time-password'];
+    const newPassword = req.body['new-password'];
 
     if (!loginAlias || !otp || !newPassword) {
         return res.json({
@@ -882,7 +885,7 @@ exports.changePassword = (req, res, next) => {
 
     }
 
-    User.findOne({ $or: [{ mobileNumber: req.body.loginAlias }, { userName: req.body.loginAlias }, { email: req.body.loginAlias }] }).then(data => {
+    User.findOne({ $or: [{ mobileNumber: req.body['login-alias'] }, { userName: req.body['login-alias'] }, { email: req.body['login-alias'] }] }).then(data => {
         if (!data) {
             res.json({
                 "error-response": {

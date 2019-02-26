@@ -4,13 +4,16 @@ const ParkingPlace = require('./db/models/ParkingPlace')
 
 exports.signUp = (req, res) => {
 
-    var displayName = req.body.displayName;
-    var iat = req.body.iat;
-    var iot = req.body.iot;
+    var displayName = req.body['display-name'];
+    var iat = req.body['Iat'];
+    var iot = req.body['Ion'];
+    console.log(displayName)
+    console.log(iat)
+    console.log(iat)
 
     const address = {
         street: req.body.address.street,
-        houseNumber: req.body.address.houseNumber,
+        houseNumber: req.body.address['house-number'],
         zipcode: req.body.address.zipcode,
         city: req.body.address.city
     }
@@ -76,7 +79,7 @@ exports.signUp = (req, res) => {
 
 exports.delete = (req, res) => {
 
-    const parkingHouseId = req.params.parkingHouseIdentifier;
+    const parkingHouseId = req.params['parking-house-identifier'];
 
     if (!parkingHouseId) {
         res.json({
@@ -88,7 +91,7 @@ exports.delete = (req, res) => {
         })
     }
 
-    ParkingHouse.findOneAndDelete(req.params.parkingHouseIdentifier, function (err, parkinghouse) {
+    ParkingHouse.findOneAndDelete(req.params['parking-house-identifier'], function (err, parkinghouse) {
 
         if (!parkinghouse) {
             res.json({
@@ -100,7 +103,7 @@ exports.delete = (req, res) => {
             })
             return
         }
-        ParkingPlace.deleteMany({ parkingHouse: req.params.parkingHouseIdentifier }, function (err, parkingplaces) {
+        ParkingPlace.deleteMany({ parkingHouse: req.params['parking-house-identifier'] }, function (err, parkingplaces) {
             if (err) {
                 res.json(err)
             }
@@ -124,8 +127,8 @@ exports.delete = (req, res) => {
 }
 
 exports.modify = (req, res) => {
-    const parkingHouseId = req.params.parkingHouseIdentifier;
-    var displayName = req.body.displayName;
+    const parkingHouseId = req.params['parking-house-identifier'];
+    var displayName = req.body['display-name'];
     if (!parkingHouseId || !displayName) {
         res.json({
             "error-response": {

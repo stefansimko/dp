@@ -8,10 +8,10 @@ const Together = require('./db/models/Together')
 
 exports.signUp = (req, res) => {
 
-    var displayName = req.body.displayName;
-    var parkingHouse = req.body.parkingHouse;
+    var displayName = req.body['display-name'];
+    var parkingHouse = req.body['parking-house'];
     if (!displayName || !parkingHouse) {
-        res.json({
+        return res.json({
             "error-response": {
                 "error-code": 400,
                 "error'key": "UNMARSHALLING_EXCEPTION",
@@ -19,72 +19,71 @@ exports.signUp = (req, res) => {
             }
         })
 
-        return
+
     }
 
-    ParkingPlace.findOne({ displayName: displayName }, function (err, parkingplace) {
-        if (err) {
-            res.send(err)
-        }
+    ParkingHouse.findOne({ _id: parkingHouse }
+    ).then(data => {
 
-        if (parkingplace) {
-            res.json({
-                "error-response": {
-                    "error-code": 403,
-                    "error'key": "PARKING_PLACE_ALREADY_EXISTS",
-                    "error-message": "Parking place already exits by the same name"
-                }
-            })
-
-            return
-        }
-        ParkingHouse.findOne({ _id: parkingHouse }, function (err, parkingHouse) {
+        ParkingPlace.findOne({ displayName: displayName, parkingHouse: data._id }, function (err, parkingplace) {
             if (err) {
                 res.send(err)
             }
 
-            if (!parkingHouse) {
+            if (parkingplace) {
                 res.json({
                     "error-response": {
-                        "error-code": 404,
-                        "error'key": "PARKING_HOUSE_UNKNOWN",
-                        "error-message": "Parking place already doesnt exist with this name"
+                        "error-code": 403,
+                        "error'key": "PARKING_PLACE_ALREADY_EXISTS",
+                        "error-message": "Parking place already exits by the same name"
                     }
                 })
 
                 return
             }
 
-        })
-    });
-    const parkingPlace = new ParkingPlace({
-        displayName: req.body.displayName,
-        parkingHouse: req.body.parkingHouse,
-    }).save()
-        .then(data => {
 
-            ParkingHouse.findByIdAndUpdate(
-                data.parkingHouse,
-                { $push: { parkingplace: data._id } },
-                { new: true }, (err, doc) => {
-                    if (err) {
-                        console.log("Something wrong when updating data!");
-                    }
-                }
-            )
-
-            res.status(200).send({ identificator: data._id });
-        }).catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while creating the ParkingHouse."
-            });
         });
+        const parkingPlace = new ParkingPlace({
+            displayName: req.body['display-name'],
+            parkingHouse: req.body['parking-house'],
+        }).save()
+            .then(data => {
+
+                ParkingHouse.findByIdAndUpdate(
+                    data.parkingHouse,
+                    { $push: { parkingplace: data._id } },
+                    { new: true }, (err, doc) => {
+                        if (err) {
+                            return res.send("Occured error while updating data.")
+                        }
+                    }
+                )
+
+                res.status(200).send({ identificator: data._id });
+            }).catch(err => {
+                res.status(500).send({
+                    message: err.message || "Some error occurred while creating the Parkingplace."
+                });
+            });
+    }).catch(err => {
+        return res.json({
+            "error-response": {
+                "error-code": 404,
+                "error'key": "PARKING_HOUSE_UNKNOWN",
+                "error-message": "Parking place already doesnt exist with this name"
+            }
+        })
+    })
+
+
+
 };
 
 exports.modify = (req, res) => {
 
-    const parkingPlaceId = req.params.parkingPlaceIdentifier;
-    const displayName = req.body.displayName;
+    const parkingPlaceId = req.params['parking-place-identifier'];
+    const displayName = req.body['display-name'];
 
     if (!parkingPlaceId || !displayName) {
         res.json({
@@ -121,7 +120,7 @@ exports.modify = (req, res) => {
 }
 exports.delete = (req, res) => {
 
-    const parkingPlaceId = req.params.parkingPlaceIdentifier;
+    const parkingPlaceId = req.params['parking-place-identifier'];
 
     ParkingPlace.findOneAndDelete(parkingPlaceId, function (err, parkingplace) {
         if (err) {
@@ -171,7 +170,7 @@ exports.delete = (req, res) => {
     })
 },
     exports.getAvailability = (req, res) => {
-        const parkingPlaceId = req.params.parkingPlaceIdentifier;
+        const parkingPlaceId = req.params['parking-place-identifier'];
         ParkingPlace.findById(parkingPlaceId, 'displayName').lean()
             .populate('owner', '-_id firstName lastName mobileNumber email')
             .populate('parkingHouse', 'displayName Iat Iot address').lean()

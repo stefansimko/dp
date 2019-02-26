@@ -138,8 +138,7 @@ const UserSchema = new mongoose.Schema({
     },
     oneTimePassword: {
         required: false,
-        type: String,
-        unique: true
+        type: String
     },
     optWasUsed: {
         required: false,

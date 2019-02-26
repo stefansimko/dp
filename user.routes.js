@@ -8,11 +8,11 @@ module.exports = (app) => {
 
     app.post('/v1/register/user', users.signUp);
 
-    app.post('/v1/modify/user/:loginAlias', login, users.modify);
+    app.post('/v1/modify/user/:login-alias', login, users.modify);
 
     // app.post('/v1/delete/user/:loginAlias', users.delete);
 
-    app.get('/v1/user/:loginAlias', login, users.userInfo);
+    app.get('/v1/user/:login-alias', login, users.userInfo);
 
     app.get('/v1/user/:loginAlias/profile', login, users.userProfile);
 

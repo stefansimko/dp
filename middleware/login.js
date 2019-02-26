@@ -88,7 +88,11 @@ module.exports = (req, res, next) => {
                             req.httpMethod = httpMethod;
 
                             req.userName = userName;
-                            next()
+                            numberOfRemainingAttemptsNew = 3
+                            userFound.update({ $set: { numberOfRemainingAttempts: numberOfRemainingAttemptsNew }, upsert: true, new: true }).then(data => {
+                                next()
+                            })
+
                         }
                         else {
                             numberOfRemainingAttemptsNew = userFound.numberOfRemainingAttempts - 1;
